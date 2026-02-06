@@ -5,6 +5,7 @@ import database.Database;
 import entityClasses.User;
 import javafx.stage.Stage;
 import userNameRecognizerTestbed.UserNameRecognizer;
+import passwordPopUpWindow.Model;
 import javafx.scene.control.Alert;
 
 /*******
@@ -116,6 +117,19 @@ protected static void doSetupAdmin(Stage ps, int r) {
 			alert.showAndWait();
 			return; // Exit the method, don't create the account
 		}
+		
+		
+		// Validate the password using passwordPopUpWindow
+		String passwordError = Model.evaluatePassword(adminPassword1);
+		if (!passwordError.isEmpty()) {
+			// password is invalid, show error and stop
+		    Alert alert = new Alert(Alert.AlertType.ERROR);
+		    alert.setTitle("Invalid Password");
+		    alert.setHeaderText(passwordError);
+		    alert.showAndWait();
+		    return; // Exit the method, don't create the account
+		}
+		
 		
 		// Make sure the two passwords are the same
 		if (adminPassword1.compareTo(adminPassword2) == 0) {

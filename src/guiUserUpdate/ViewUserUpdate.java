@@ -13,6 +13,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import entityClasses.User;
 import userNameRecognizerTestbed.UserNameRecognizer;
+import passwordPopUpWindow.Model;
 import javafx.scene.control.Alert;
 
 /*******
@@ -90,6 +91,7 @@ public class ViewUserUpdate {
 	private static Button button_UpdatePreferredFirstName = new Button("Update Preferred First Name");
 	private static Button button_UpdateEmailAddress = new Button("Update Email Address");
 	
+	
 
 	
 
@@ -107,6 +109,11 @@ public class ViewUserUpdate {
 	private static TextInputDialog dialogUpdatePreferredFirstName;
 	private static TextInputDialog dialogUpdateEmailAddresss;
 	private static TextInputDialog dialogUpdateUsername;
+	private static TextInputDialog dialogUpdatePassword;
+
+	
+	
+	
 
 	
 	
@@ -229,6 +236,9 @@ public class ViewUserUpdate {
 		dialogUpdatePreferredFirstName = new TextInputDialog("");
 		dialogUpdateEmailAddresss = new TextInputDialog("");
 		dialogUpdateUsername = new TextInputDialog("");
+		dialogUpdatePassword = new TextInputDialog("");
+
+		
 
 		// Establish the label for each of the dialogs.
 		dialogUpdateFirstName.setTitle("Update First Name");
@@ -249,6 +259,8 @@ public class ViewUserUpdate {
 		dialogUpdateUsername.setTitle("Update User Name");
 		dialogUpdateUsername.setHeaderText("Update your User Name");
 		
+		dialogUpdatePassword.setTitle("Update Password");
+		dialogUpdatePassword.setHeaderText("Update your Password");
 		
 		
 		
@@ -277,10 +289,19 @@ public class ViewUserUpdate {
     		} else { Alert alert = new Alert(Alert.AlertType.ERROR); alert.setTitle("Error");alert.setHeaderText(validationError);
     		alert.showAndWait();} }); });
         
-        // password
+     //Password, new addition. Implements the use of passwordPopUpWindow, to reject passwords that do not meet the specifications, and send an error using Alert. 
+
         setupLabelUI(label_Password, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 150);
         setupLabelUI(label_CurrentPassword, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 150);
         setupButtonUI(button_UpdatePassword, "Dialog", 18, 275, Pos.CENTER, 500, 143);
+        button_UpdatePassword.setOnAction((_) -> {result = dialogUpdatePassword.showAndWait();
+        	result.ifPresent(newPassword -> {String passwordError = Model.evaluatePassword(newPassword);
+        		if (passwordError.isEmpty()) {theDatabase.updatePassword(theUser.getUserName(), newPassword);
+        			theDatabase.getUserAccountDetails(theUser.getUserName());String updatedPassword = theDatabase.getCurrentPassword();
+        			theUser.setPassword(updatedPassword);if (updatedPassword == null || updatedPassword.length() < 1)label_CurrentPassword.setText("<none>");
+        			else label_CurrentPassword.setText(updatedPassword);} else {Alert alert = new Alert(Alert.AlertType.ERROR);
+        			alert.setTitle("Error");alert.setHeaderText(passwordError);alert.showAndWait();}
+        	});});
         
         // First Name
         setupLabelUI(label_FirstName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 200);

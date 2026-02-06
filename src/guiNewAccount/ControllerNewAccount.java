@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import database.Database;
 import entityClasses.User;
 import userNameRecognizerTestbed.UserNameRecognizer;
+import passwordPopUpWindow.Model;
 import javafx.scene.control.Alert;
 
 /*******
@@ -79,6 +80,19 @@ public class ControllerNewAccount {
 			alert.showAndWait();
 			return; // Exit the method, don't create the account
 		}
+		
+		// Validate the password using passwordPopUpWindow
+		String passwordError = Model.evaluatePassword(password);
+		if (!passwordError.isEmpty()) {
+			// password is invalid, show error and stop
+		    Alert alert = new Alert(Alert.AlertType.ERROR);
+		    alert.setTitle("Invalid Password");
+		    alert.setHeaderText(passwordError);
+		    alert.showAndWait();
+		    return; // Exit the method, don't create the account
+		}
+		
+		
 		
 		// Display key information to the log
 		System.out.println("** Account for Username: " + username + "; theInvitationCode: "+
